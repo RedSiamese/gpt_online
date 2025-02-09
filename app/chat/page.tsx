@@ -63,7 +63,10 @@ const Chat = () => {
         },
         body: JSON.stringify({
           model: 'gpt-4o-mini',
-          messages: context,
+          messages: context.map((msg) => ({
+            role: msg.role,
+            content: String(msg.content),
+          })),
         }),
       });
 

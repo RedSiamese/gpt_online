@@ -10,7 +10,7 @@ interface Message {
 }
 
 const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
-  const highlightText = (text: string) => {
+  const renderText = (text: string) => {
     const parts = text.split(/(@\S+)/g);
     return parts.map((part, index) =>
       part.startsWith('@') ? (
@@ -18,16 +18,14 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
           {part}
         </span>
       ) : (
-        part
+        <ReactMarkdown key={index}>{part}</ReactMarkdown>
       )
     );
   };
 
   return (
     <div className={`${styles.message} ${message.sender === 'ai' ? styles.aiMessage : styles.userMessage}`}>
-      <ReactMarkdown components={{ p: ({ ...props }) => <p {...props}>{highlightText(String(props.children))}</p> }}>
-        {message.text}
-      </ReactMarkdown>
+      <div>{renderText(message.text)}</div>
       {message.sender === 'user' && message.requestTokens !== undefined && message.requestTokens > 0 && (
         <div className={styles.tokenCount}>请求Tokens: {message.requestTokens}</div>
       )}
