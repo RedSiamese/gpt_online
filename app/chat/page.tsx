@@ -5,8 +5,15 @@ import ChatInput from '../../components/ChatInput';
 import ChatMessage from '../../components/ChatMessage';
 import styles from '../../styles/Chat.module.css';
 
+interface Message {
+  text: string;
+  sender: 'user' | 'ai';
+  requestTokens?: number;
+  responseTokens?: number;
+}
+
 const Chat = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [pyiFilesContent, setPyiFilesContent] = useState('');
 
   useEffect(() => {
@@ -25,7 +32,7 @@ const Chat = () => {
   }, []);
 
   const handleSendMessage = async (message: string) => {
-    const userMessage = { text: message, sender: 'user', requestTokens: 0 };
+    const userMessage: Message = { text: message, sender: 'user', requestTokens: 0 };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
 
