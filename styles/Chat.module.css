@@ -1,0 +1,71 @@
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.messagesContainer {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.inputContainer {
+  display: flex;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.sendButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.message {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  max-width: 60%;
+}
+
+.userMessage {
+  background-color: #007bff;
+  color: #fff;
+  align-self: flex-end;
+}
+
+.aiMessage {
+  background-color: #e5e5e5;
+  color: #000;
+  align-self: flex-start;
+}
+
+/* 添加代码段的样式 */
+.message pre {
+  background-color: #2d2d2d;
+  color: #f8f8f2;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+/* 添加token数显示的样式 */
+.tokenCount {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 5px;
+}
