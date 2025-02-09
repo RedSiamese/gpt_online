@@ -24,7 +24,7 @@ const Chat = () => {
     fetchPyiFilesContent();
   }, []);
 
-  const handleSendMessage = async (message) => {
+  const handleSendMessage = async (message: string) => {
     const userMessage = { text: message, sender: 'user', requestTokens: 0 };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
