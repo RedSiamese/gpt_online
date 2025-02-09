@@ -10,7 +10,6 @@ interface Message {
 }
 
 const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
-  
   const renderText = (text: string) => {
     const parts = text.split(/(@\S+)/g);
     return parts.map((part, index) =>
@@ -23,7 +22,6 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
       )
     );
   };
-  
 
   return (
     <div className={`${styles.message} ${message.sender === 'ai' ? styles.aiMessage : styles.userMessage}`}>
