@@ -69,3 +69,11 @@
   color: #888;
   margin-top: 5px;
 }
+
+/* 添加高亮显示的样式 */
+.highlight {
+  color: #007bff;
+  background-color: #d3d3d3;
+  padding: 0 4px;
+  border-radius: 4px;
+}

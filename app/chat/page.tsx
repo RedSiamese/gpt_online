@@ -38,13 +38,13 @@ const Chat = () => {
       content: msg.text,
     }));
 
-    // 在第一句对话前添加文件内容和描述
-    // if (messages.length === 0) {
-    //   context = [
-    //     { role: 'system', content: '这些pyi文件是python扩展包pycluster2x的注解文件，描述了其中定义的各种类和类方法的定义。\n\n' + pyiFilesContent },
-    //     ...context,
-    //   ];
-    // }
+    // 如果用户输入包含 "@pycluster2x"，则添加pycluster2x上下文
+    if (message.includes('@pycluster2x ')) {
+      context = [
+        { role: 'system', content: '这些pyi文件是python扩展包pycluster2x的注解文件，描述了其中定义的各种类和类方法的定义。\n\n' + pyiFilesContent },
+        ...context,
+      ];
+    }
 
     // 调用OpenAI ChatGPT API
     try {
