@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
+  --background: #e0e0e0; /* 将背景颜色改成灰色 */
   --foreground: #171717;
 }
 
@@ -13,7 +13,6 @@
     --foreground: #ededed;
   }
 }
-
 
 body {
   color: var(--foreground);
