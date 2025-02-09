@@ -21,7 +21,7 @@ const ChatMessage = ({ message }) => {
 
   return (
     <div className={`${styles.message} ${message.sender === 'ai' ? styles.aiMessage : styles.userMessage}`}>
-      <ReactMarkdown components={{ p: ({ node, ...props }) => <p {...props}>{highlightText(String(props.children))}</p> }}>
+      <ReactMarkdown components={{ p: ({ ...props }) => <p {...props}>{highlightText(String(props.children))}</p> }}>
         {message.text}
       </ReactMarkdown>
       {message.sender === 'user' && message.requestTokens > 0 && (
