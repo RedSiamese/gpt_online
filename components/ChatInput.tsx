@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import styles from '../styles/Chat.module.css';
 
-const ChatInput = ({ onSendMessage }) => {
+interface ChatInputProps {
+  onSendMessage: (message: string) => void;
+}
+
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
   const [input, setInput] = useState('');
 
   const handleSend = () => {
@@ -11,7 +15,7 @@ const ChatInput = ({ onSendMessage }) => {
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       if (e.ctrlKey) {
         // Ctrl+Enter 换行
