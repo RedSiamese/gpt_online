@@ -58,21 +58,14 @@ const Chat = () => {
       }
     }
 
-    // 调用OpenAI ChatGPT API
+    // 调用新的API路由
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`, // 读取环境变量中的API密钥
         },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: context.map((msg) => ({
-            role: msg.role,
-            content: String(msg.content),
-          })),
-        }),
+        body: JSON.stringify({ messages: context }),
       });
 
       if (!response.ok) {
