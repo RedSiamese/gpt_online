@@ -22,6 +22,7 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
       )
     );
   };
+  
 
   return (
     <div className={`${styles.message} ${message.sender === 'ai' ? styles.aiMessage : styles.userMessage}`}>

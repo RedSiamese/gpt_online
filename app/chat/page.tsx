@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ChatInput from '../../components/ChatInput';
 import ChatMessage from '../../components/ChatMessage';
 import styles from '../../styles/Chat.module.css';
@@ -14,22 +14,19 @@ interface Message {
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [pyiFilesContent, setPyiFilesContent] = useState('');
+  const [docsContent, setDocsContent] = useState<{ [key: string]: string }>({});
 
-  useEffect(() => {
-    // 调用API获取docs/pyi/目录中的所有文件内容
-    const fetchPyiFilesContent = async () => {
-      try {
-        const response = await fetch('/api/readPyiFiles');
-        const data = await response.json();
-        setPyiFilesContent(data.content);
-      } catch (error) {
-        console.error('Error fetching pyi files content:', error);
-      }
-    };
-
-    fetchPyiFilesContent();
-  }, []);
+  const fetchDocsContent = async (dirName: string) => {
+    try {
+      const response = await fetch(`/api/readDocs?dir=${dirName}`);
+      const data = await response.json();
+      setDocsContent((prev) => ({ ...prev, [dirName]: data.content }));
+      return data.content;
+    } catch (error) {
+      console.error('Error fetching docs content:', error);
+      return '';
+    }
+  };
 
   const handleSendMessage = async (message: string) => {
     const userMessage: Message = { text: message, sender: 'user', requestTokens: 0 };
@@ -45,12 +42,20 @@ const Chat = () => {
       content: msg.text,
     }));
 
-    // 如果用户输入包含 "@pycluster2x"，则添加pycluster2x上下文
-    if (message.includes('@pycluster2x ')) {
-      context = [
-        { role: 'system', content: '这些pyi文件是python扩展包pycluster2x的注解文件，描述了其中定义的各种类和类方法的定义。\n\n' + pyiFilesContent },
-        ...context,
-      ];
+    // 如果用户输入包含 "@xxx "，则解析出xxx，并在docs目录中搜索该名字的目录
+    const match = message.match(/@(\S+)\s/);
+    if (match) {
+      const dirName = match[1];
+      let dirContent = docsContent[dirName];
+      if (!dirContent) {
+        dirContent = await fetchDocsContent(dirName);
+      }
+      if (dirContent) {
+        context = [
+          { role: 'system', content: dirContent },
+          ...context,
+        ];
+      }
     }
 
     // 调用OpenAI ChatGPT API
