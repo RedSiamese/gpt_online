@@ -5,7 +5,7 @@
   background-color: #e0e0e0;
   max-width: 1400px; /* 保证聊天界面始终保持有1000像素宽度 */
   margin: 0px auto; /* 动态调整左右内边距，上下内边距改成50 */
-  padding: 50px; /* 增加内边距 */
+  padding: 20px; /* 增加内边距 */
 }
 
 .messagesContainer {
@@ -14,7 +14,7 @@
   overflow-y: auto;
   background-color: #fff; /* 设置背景色 */
   border-radius: 8px; /* 设置圆角 */
-  box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加阴影 */
   margin-bottom: 8px; 
 }
 
@@ -24,7 +24,7 @@
   background-color: #fff;
   border-top: 1px solid #ddd;
   border-radius: 8px; /* 设置圆角 */
-  box-shadow: 5px -2px 4px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* 添加阴影 */
 }
 
 .input {
@@ -61,6 +61,12 @@
   background-color: #e5e5e5; 
   color: #2f2f2f;
   align-self: flex-start;
+}
+
+.systemMessage {
+  background-color: #ffcccc; /* 红色背景 */
+  color: #ff0000; /* 红色文字 */
+  align-self: center;
 }
 
 /* 添加代码段的样式 */

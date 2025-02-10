@@ -7,7 +7,7 @@ import styles from '../../styles/Chat.module.css';
 
 interface Message {
   text: string;
-  sender: 'user' | 'ai';
+  sender: 'user' | 'ai' | 'system';
   requestTokens?: number;
   responseTokens?: number;
 }
@@ -32,6 +32,31 @@ const Chat = () => {
     const userMessage: Message = { text: message, sender: 'user', requestTokens: 0 };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
+
+    // 处理!close和!open命令
+    if (message === '!close' || message === '!open') {
+      try {
+        const response = await fetch('/api/control', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ command: message }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setMessages([...newMessages, { text: data.message, sender: 'system' }]);
+        return;
+      } catch (error) {
+        console.error('Error calling control API:', error);
+        setMessages([...newMessages, { text: '控制命令执行失败，请稍后再试。', sender: 'system' }]);
+        return;
+      }
+    }
 
     // 只保留最近20次的历史对话
     const recentMessages = newMessages.slice(-20);
@@ -69,7 +94,14 @@ const Chat = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.status === 503) {
+          setMessages([...newMessages, { text: '服务已关闭', sender: 'system' }]);
+        } else if (response.status === 504) {
+          setMessages([...newMessages, { text: 'AI请求超时，请稍后再试', sender: 'system' }]);
+        } else {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return;
       }
 
       const data = await response.json();
@@ -83,10 +115,7 @@ const Chat = () => {
       setMessages([...newMessages, { text: aiMessage, sender: 'ai', responseTokens }]);
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: 'AI回复失败，请稍后再试。', sender: 'ai', responseTokens: 0 },
-      ]);
+      setMessages([...newMessages, { text: 'AI回复失败，请稍后再试。', sender: 'system' }]);
     }
   };
 
