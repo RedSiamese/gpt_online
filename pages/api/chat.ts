@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import fetch from 'node-fetch';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -18,6 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         model: 'gpt-4o-mini',
         messages,
       }),
+      timeout: 5000, // 增加超时时间到30秒
     });
 
     if (!response.ok) {
