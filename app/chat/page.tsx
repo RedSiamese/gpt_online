@@ -7,13 +7,27 @@ import styles from '../../styles/Chat.module.css';
 interface Message {
   text: string;
   sender: 'user' | 'ai' | 'system';
+  timestamp?: string;
 }
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
+  const formatTime = () => {
+    const now = new Date();
+    return now.toLocaleTimeString('zh-CN', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    });
+  };
+
   const handleSendMessage = async (message: string) => {
-    const userMessage: Message = { text: message, sender: 'user' };
+    const userMessage: Message = { 
+      text: message, 
+      sender: 'user',
+      timestamp: formatTime()  // 为用户消息添加时间戳
+    };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
 
@@ -31,11 +45,19 @@ const Chat = () => {
         }
 
         const data = await response.json();
-        setMessages([...newMessages, { text: data.message, sender: 'system' }]);
+        setMessages([...newMessages, { 
+          text: data.message, 
+          sender: 'system',
+          timestamp: formatTime()
+        }]);
         return;
       } catch (error) {
         console.error('Error calling control API:', error);
-        setMessages([...newMessages, { text: '控制命令执行失败，请稍后再试。', sender: 'system' }]);
+        setMessages([...newMessages, { 
+          text: '控制命令执行失败，请稍后再试。', 
+          sender: 'system',
+          timestamp: formatTime()
+        }]);
         return;
       }
     }
@@ -54,9 +76,17 @@ const Chat = () => {
 
       if (!response.ok) {
         if (response.status === 503) {
-          setMessages([...newMessages, { text: '服务已关闭', sender: 'system' }]);
+          setMessages([...newMessages, { 
+            text: '服务已关闭', 
+            sender: 'system',
+            timestamp: formatTime()
+          }]);
         } else if (response.status === 504) {
-          setMessages([...newMessages, { text: 'AI请求超时，请稍后再试', sender: 'system' }]);
+          setMessages([...newMessages, { 
+            text: 'AI请求超时，请稍后再试', 
+            sender: 'system',
+            timestamp: formatTime()
+          }]);
         } else {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -74,7 +104,18 @@ const Chat = () => {
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (done) {
+          // 在流式输出结束时，为最后一条AI消息添加时间戳
+          setMessages(prev => {
+            const updated = [...prev];
+            const lastMessage = updated[updated.length - 1];
+            if (lastMessage.sender === 'ai') {
+              lastMessage.timestamp = formatTime();
+            }
+            return updated;
+          });
+          break;
+        }
 
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');
@@ -103,7 +144,11 @@ const Chat = () => {
 
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
-      setMessages([...newMessages, { text: 'AI回复失败，请稍后再试。', sender: 'system' }]);
+      setMessages([...newMessages, { 
+        text: 'AI回复失败，请稍后再试。', 
+        sender: 'system',
+        timestamp: formatTime()
+      }]);
     }
   };
 

@@ -90,6 +90,14 @@
   border-radius: 4px;
 }
 
+.timestamp {
+  font-size: 0.8em;
+  color: #666;
+  text-align: right;
+  margin-top: 4px;
+  margin-left: auto;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

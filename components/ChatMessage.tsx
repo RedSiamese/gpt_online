@@ -5,6 +5,7 @@ import styles from '../styles/Chat.module.css';
 interface Message {
   text: string;
   sender: 'user' | 'ai' | 'system';
+  timestamp?: string;
 }
 
 const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
@@ -40,6 +41,9 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
       }`}
     >
       <div>{renderText(displayedText)}</div>
+      {message.timestamp && (
+        <div className={styles.timestamp}>{message.timestamp}</div>
+      )}
     </div>
   );
 };
