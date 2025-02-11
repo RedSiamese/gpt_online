@@ -39,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { messages } = req.body;
     let systemContext = '';
 
-    // 检查最后一条用户消息是否包含 @指令
+    // 检查最后一条用户消息是否包含 @指令，但不再特殊处理
     const lastUserMessage = messages[messages.length - 1];
     if (lastUserMessage.role === 'user') {
       const match = lastUserMessage.content.match(/@(\S+)\s/);
