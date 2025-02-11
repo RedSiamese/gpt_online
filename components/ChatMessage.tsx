@@ -5,8 +5,6 @@ import styles from '../styles/Chat.module.css';
 interface Message {
   text: string;
   sender: 'user' | 'ai' | 'system';
-  requestTokens?: number;
-  responseTokens?: number;
 }
 
 const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
@@ -42,12 +40,6 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
       }`}
     >
       <div>{renderText(displayedText)}</div>
-      {message.sender === 'user' && message.requestTokens !== undefined && message.requestTokens > 0 && (
-        <div className={styles.tokenCount}>请求Tokens: {message.requestTokens}</div>
-      )}
-      {message.sender === 'ai' && message.responseTokens !== undefined && (
-        <div className={styles.tokenCount}>回复Tokens: {message.responseTokens}</div>
-      )}
     </div>
   );
 };

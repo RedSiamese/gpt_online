@@ -80,12 +80,7 @@
   overflow-x: auto;
 }
 
-/* 添加token数显示的样式 */
-.tokenCount {
-  font-size: 0.8em;
-  color: #888;
-  margin-top: 5px;
-}
+/* 删除 .tokenCount 样式 */
 
 /* 添加高亮显示的样式 */
 .highlight {

@@ -7,15 +7,13 @@ import styles from '../../styles/Chat.module.css';
 interface Message {
   text: string;
   sender: 'user' | 'ai' | 'system';
-  requestTokens?: number;
-  responseTokens?: number;
 }
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   const handleSendMessage = async (message: string) => {
-    const userMessage: Message = { text: message, sender: 'user', requestTokens: 0 };
+    const userMessage: Message = { text: message, sender: 'user' };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
 
@@ -66,7 +64,7 @@ const Chat = () => {
       }
 
       // 创建一个空的 AI 响应消息
-      const aiMessage: Message = { text: '', sender: 'ai', responseTokens: 0 };
+      const aiMessage: Message = { text: '', sender: 'ai' };
       setMessages([...newMessages, aiMessage]);
 
       const reader = response.body?.getReader();
@@ -87,28 +85,12 @@ const Chat = () => {
             if (data === '[DONE]') break;
 
             try {
-              const { 
-                content, 
-                usage
-              } = JSON.parse(data);
-
+              const { content } = JSON.parse(data);
               setMessages(prev => {
                 const updated = [...prev];
                 const lastMessage = updated[updated.length - 1];
                 if (lastMessage.sender === 'ai') {
-                  if (content) {
-                    lastMessage.text += content;
-                  }
-                  if (usage) {
-                    lastMessage.responseTokens = usage.completion_tokens;
-                    // 更新上一条用户消息的请求tokens
-                    if (updated.length > 1) {
-                      const userMessage = updated[updated.length - 2];
-                      if (userMessage.sender === 'user') {
-                        userMessage.requestTokens = usage.prompt_tokens;
-                      }
-                    }
-                  }
+                  lastMessage.text += content;
                 }
                 return updated;
               });

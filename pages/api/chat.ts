@@ -69,13 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     for await (const chunk of stream) {
       const content = chunk.choices[0]?.delta?.content || '';
-      const usage = chunk.usage; // 从每个chunk中获取usage信息
-      
-      res.write(`data: ${JSON.stringify({ 
-        content,
-        usage,
-        final: !content && usage // 当content为空且有usage时，说明是最后一个chunk
-      })}\n\n`);
+      res.write(`data: ${JSON.stringify({ content })}\n\n`);
     }
 
     res.end('data: [DONE]\n\n');
