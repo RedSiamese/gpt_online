@@ -12,7 +12,7 @@
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  background-color: #e0e0e0; /* 设置背景色 */
+  background-color: #fff; /* 设置背景色 */
   border-radius: 8px; /* 设置圆角 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加阴影 */
   margin-bottom: 8px; 
