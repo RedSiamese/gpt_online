@@ -67,23 +67,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       stream: true,
     });
 
-    let totalTokens = 0;
     for await (const chunk of stream) {
       const content = chunk.choices[0]?.delta?.content || '';
-      // 估算token数量（简单估算：按字符数/4计算）
-      totalTokens += Math.ceil(content.length / 4);
+      const usage = chunk.usage; // 从每个chunk中获取usage信息
+      
       res.write(`data: ${JSON.stringify({ 
         content,
-        tokens: totalTokens 
+        usage,
+        final: !content && usage // 当content为空且有usage时，说明是最后一个chunk
       })}\n\n`);
     }
 
-    // 发送最终的token计数
-    res.write(`data: ${JSON.stringify({ 
-      content: '',
-      tokens: totalTokens,
-      final: true 
-    })}\n\n`);
     res.end('data: [DONE]\n\n');
 
   } catch (error: unknown) {

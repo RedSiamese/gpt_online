@@ -87,20 +87,26 @@ const Chat = () => {
             if (data === '[DONE]') break;
 
             try {
-              const { content, tokens, final } = JSON.parse(data);
+              const { 
+                content, 
+                usage
+              } = JSON.parse(data);
+
               setMessages(prev => {
                 const updated = [...prev];
                 const lastMessage = updated[updated.length - 1];
                 if (lastMessage.sender === 'ai') {
-                  lastMessage.text += content;
-                  if (tokens) {
-                    lastMessage.responseTokens = tokens;
+                  if (content) {
+                    lastMessage.text += content;
                   }
-                  // 更新上一条用户消息的请求tokens
-                  if (final && updated.length > 1) {
-                    const userMessage = updated[updated.length - 2];
-                    if (userMessage.sender === 'user') {
-                      userMessage.requestTokens = Math.ceil(userMessage.text.length / 4);
+                  if (usage) {
+                    lastMessage.responseTokens = usage.completion_tokens;
+                    // 更新上一条用户消息的请求tokens
+                    if (updated.length > 1) {
+                      const userMessage = updated[updated.length - 2];
+                      if (userMessage.sender === 'user') {
+                        userMessage.requestTokens = usage.prompt_tokens;
+                      }
                     }
                   }
                 }
