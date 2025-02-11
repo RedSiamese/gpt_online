@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import styles from '../styles/Chat.module.css';
 
@@ -10,6 +10,14 @@ interface Message {
 }
 
 const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
+  const [displayedText, setDisplayedText] = useState(message.text);
+
+  useEffect(() => {
+    if (message.sender === 'ai') {
+      setDisplayedText(message.text);
+    }
+  }, [message.text, message.sender]);
+
   const renderText = (text: string) => {
     const parts = text.split(/(@\S+)/g);
     return parts.map((part, index) =>
@@ -33,7 +41,7 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
           : styles.userMessage
       }`}
     >
-      <div>{renderText(message.text)}</div>
+      <div>{renderText(displayedText)}</div>
       {message.sender === 'user' && message.requestTokens !== undefined && message.requestTokens > 0 && (
         <div className={styles.tokenCount}>请求Tokens: {message.requestTokens}</div>
       )}

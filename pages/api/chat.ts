@@ -54,12 +54,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ? [{ role: 'system', content: systemContext }, ...messages]
       : messages;
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: fullMessages,
+    // 设置流式响应头
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
     });
 
-    res.status(200).json(response); // 直接返回response对象，不需要.data
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: fullMessages,
+      stream: true,
+    });
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content || '';
+      res.write(`data: ${JSON.stringify({ content })}\n\n`);
+    }
+
+    res.end('data: [DONE]\n\n');
 
   } catch (error: unknown) {
     console.error('Error:', error);

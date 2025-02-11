@@ -65,13 +65,44 @@ const Chat = () => {
         return;
       }
 
-      const data = await response.json();
-      const aiMessage = data.choices[0].message.content;
-      const requestTokens = data.usage.prompt_tokens;
-      const responseTokens = data.usage.completion_tokens;
+      // 创建一个空的 AI 响应消息
+      const aiMessage: Message = { text: '', sender: 'ai', responseTokens: 0 };
+      setMessages([...newMessages, aiMessage]);
 
-      newMessages[newMessages.length - 1].requestTokens = requestTokens;
-      setMessages([...newMessages, { text: aiMessage, sender: 'ai', responseTokens }]);
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) throw new Error('No reader available');
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(5);
+            if (data === '[DONE]') break;
+
+            try {
+              const { content } = JSON.parse(data);
+              setMessages(prev => {
+                const updated = [...prev];
+                const lastMessage = updated[updated.length - 1];
+                if (lastMessage.sender === 'ai') {
+                  lastMessage.text += content;
+                }
+                return updated;
+              });
+            } catch (e) {
+              console.error('Error parsing chunk:', e);
+            }
+          }
+        }
+      }
+
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
       setMessages([...newMessages, { text: 'AI回复失败，请稍后再试。', sender: 'system' }]);
