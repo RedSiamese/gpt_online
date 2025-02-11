@@ -3,12 +3,13 @@ import fs from 'fs/promises';
 import path from 'path';
 import OpenAI, { APIError } from 'openai';
 import { isServiceOpen } from '../../utils/serviceStatus';
+import axios from 'axios';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function readDocsContent(dirName: string): Promise<string> {
+async function readDocsContent(dirName: string): Promise<string | null> {
   try {
     const docsDir = path.join(process.cwd(), 'docs', dirName);
     const files = await fs.readdir(docsDir);
@@ -21,7 +22,20 @@ async function readDocsContent(dirName: string): Promise<string> {
     return contents.join('\n\n');
   } catch (error) {
     console.error('Error reading docs:', error);
-    return '';
+    return null;
+  }
+}
+
+async function fetchGitHubContent(url: string): Promise<string | null> {
+  try {
+    const rawUrl = url
+      .replace('github.com', 'raw.githubusercontent.com')
+      .replace('/blob/', '/');
+    const response = await axios.get(rawUrl);
+    return `GitHub文件内容 (${url}):\n\n${response.data}`;
+  } catch (error) {
+    console.error('Error fetching GitHub content:', error);
+    return null;
   }
 }
 
@@ -39,13 +53,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { messages } = req.body;
     let systemContext = '';
 
-    // 检查最后一条用户消息是否包含 @指令，但不再特殊处理
     const lastUserMessage = messages[messages.length - 1];
     if (lastUserMessage.role === 'user') {
-      const match = lastUserMessage.content.match(/@(\S+)\s/);
+      const match = lastUserMessage.content.match(/@(\S+)/);
       if (match) {
-        const dirName = match[1];
-        systemContext = await readDocsContent(dirName);
+        const identifier = match[1];
+        let content = await readDocsContent(identifier);
+        
+        if (!content) {
+          // 检查是否为GitHub链接
+          const githubRegex = /https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/[^\/]+\/[^\s]+/;
+          if (githubRegex.test(identifier)) {
+            content = await fetchGitHubContent(identifier);
+          }
+        }
+
+        if (content) {
+          systemContext = content;
+        }
       }
     }
 
