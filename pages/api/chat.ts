@@ -95,7 +95,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     for await (const chunk of stream) {
       const choice = chunk.choices[0];
       const content = choice?.delta?.content || "";
-      const finishReason = choice?.finish_reason;
+      const finishReason = choice?.finish_reason || "unknown";
   
       // 发送内容片段（如果有）
       if (content) {
