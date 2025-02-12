@@ -104,18 +104,7 @@ const Chat = () => {
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) {
-          // 在流式输出结束时，为最后一条AI消息添加时间戳
-          setMessages(prev => {
-            const updated = [...prev];
-            const lastMessage = updated[updated.length - 1];
-            if (lastMessage.sender === 'ai') {
-              lastMessage.timestamp = formatTime();
-            }
-            return updated;
-          });
-          break;
-        }
+        if (done) break;
 
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');
@@ -123,7 +112,7 @@ const Chat = () => {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(5);
-            if (data === '[DONE]') break;
+            if (data === ' [DONE]') break;
 
             try {
               const { content } = JSON.parse(data);
@@ -141,6 +130,16 @@ const Chat = () => {
           }
         }
       }
+
+      // 在流式输出完成后添加时间戳
+      setMessages(prev => {
+        const updated = [...prev];
+        const lastMessage = updated[updated.length - 1];
+        if (lastMessage.sender === 'ai') {
+          lastMessage.timestamp = formatTime();
+        }
+        return updated;
+      });
 
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
