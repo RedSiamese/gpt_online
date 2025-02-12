@@ -104,18 +104,6 @@ const Chat = () => {
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) {
-          // 在流式输出结束时，为最后一条AI消息添加时间戳
-          setMessages(prev => {
-            const updated = [...prev];
-            const lastMessage = updated[updated.length - 1];
-            if (lastMessage.sender === 'ai') {
-              lastMessage.timestamp = formatTime();
-            }
-            return updated;
-          });
-          break;
-        }
 
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');
@@ -139,6 +127,18 @@ const Chat = () => {
               console.error('Error parsing chunk:', e);
             }
           }
+        }
+        if (done) {
+          // 在流式输出结束时，为最后一条AI消息添加时间戳
+          setMessages(prev => {
+            const updated = [...prev];
+            const lastMessage = updated[updated.length - 1];
+            if (lastMessage.sender === 'ai') {
+              lastMessage.timestamp = formatTime();
+            }
+            return updated;
+          });
+          break;
         }
       }
 
