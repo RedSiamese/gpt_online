@@ -105,7 +105,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // 检测结束标记
       if (finishReason === "stop") {
         // 发送 OpenAI 官方约定的结束标记 [DONE]
-        res.write(`data: ${JSON.stringify({ chunk.model })}\n\n`);
+        res.write(`data: ${JSON.stringify({ finishReason })}\n\n`);
         break; // 主动跳出循环
       }
     }
