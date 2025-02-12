@@ -93,8 +93,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content || '';
-      res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      const choice = chunk.choices[0];
+      const content = choice?.delta?.content || "";
+      const finishReason = choice?.finish_reason;
+  
+      // 发送内容片段（如果有）
+      if (content) {
+        res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      }
+  
+      // 检测结束标记
+      if (finishReason === "stop") {
+        // 发送 OpenAI 官方约定的结束标记 [DONE]
+        res.write("data: [DONE]\n\n");
+        break; // 主动跳出循环
+      }
     }
 
     res.end('data: [DONE]\n\n');
