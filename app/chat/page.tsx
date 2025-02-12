@@ -128,7 +128,6 @@ const Chat = () => {
       }
     }
   }
-  if (done) {
     if (chunk === "data: [DONE]\n\n") {
       // 在流式输出结束时，为最后一条AI消息添加时间戳
       setMessages(prev => {
@@ -141,7 +140,6 @@ const Chat = () => {
       });
       break;
     }
-  }
 }
 
     } catch (error) {
