@@ -109,7 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break; // 主动跳出循环
       }
     }
-
+    res.write(`data: ${JSON.stringify({ content:"finished" })}\n\n`);
     res.end('data: [DONE]\n\n');
 
   } catch (error: unknown) {
