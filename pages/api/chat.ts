@@ -6,8 +6,7 @@ import { isServiceOpen } from '../../utils/serviceStatus';
 import axios from 'axios';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 async function readDocsContent(dirName: string): Promise<string | null> {
@@ -130,22 +129,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     for await (const chunk of stream) {
-      const choice = chunk.choices[0];
-      const content = choice?.delta?.content || "";
-      const finishReason = choice?.finish_reason || "unknown";
-  
-      // 发送内容片段（如果有）
-      if (content) {
-        res.write(`data: ${JSON.stringify({ content })}\n\n`);
-      }
-  
-      // 检测结束标记
-      if (finishReason === "stop") {
-        // 发送 OpenAI 官方约定的结束标记 [DONE]
-        res.write(`data: ${JSON.stringify({ content:"[DONE]" })}\n\n`);
-        break; // 主动跳出循环
-      }
+      const content = chunk.choices[0]?.delta?.content || '';
+      res.write(`data: ${JSON.stringify({ content })}\n\n`);
     }
+
     res.end('data: [DONE]\n\n');
 
   } catch (error: unknown) {
