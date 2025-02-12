@@ -87,7 +87,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const stream = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'o3-mini',
       messages: fullMessages,
       stream: true,
     });
