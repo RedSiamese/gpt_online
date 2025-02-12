@@ -107,8 +107,6 @@ const Chat = () => {
       
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');
-      
-        let flag = false;
         
         for (const line of lines) {
           if (line.startsWith('data: ')) {
