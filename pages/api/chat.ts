@@ -112,7 +112,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   } catch (error: unknown) {
     console.error('Error:', error);
-    res.write(`data: ${JSON.stringify({ content:"error" })}\n\n`);
+    
     if (error instanceof APIError) {
       res.status(error.status || 500).json({ 
         error: error.message || 'OpenAI API error occurred'
