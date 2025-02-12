@@ -103,45 +103,49 @@ const Chat = () => {
       if (!reader) throw new Error('No reader available');
 
       while (true) {
-  const { done, value } = await reader.read();
-
-  const chunk = decoder.decode(value);
-  const lines = chunk.split('\n');
-  
-  for (const line of lines) {
-    if (line.startsWith('data: ')) {
-      const data = line.slice(5);
-      if (data === '[DONE]') break;
-
-      try {
-        const { content } = JSON.parse(data);
-        setMessages(prev => {
-          const updated = [...prev];
-          const lastMessage = updated[updated.length - 1];
-          if (lastMessage.sender === 'ai') {
-            lastMessage.text += content;
+        const { done, value } = await reader.read();
+      
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+      
+        let flag = false;
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(5);
+            if (data === '[DONE]') {
+              flag = true;
+              break;
+            }
+      
+            try {
+              const { content } = JSON.parse(data);
+              setMessages(prev => {
+                const updated = [...prev];
+                const lastMessage = updated[updated.length - 1];
+                if (lastMessage.sender === 'ai') {
+                  lastMessage.text += content;
+                }
+                return updated;
+              });
+            } catch (e) {
+              console.error('Error parsing chunk:', e);
+            }
           }
-          return updated;
-        });
-      } catch (e) {
-        console.error('Error parsing chunk:', e);
-      }
-    }
-  }
-    if (chunk === "data: [DONE]\n\n") {
-      // 在流式输出结束时，为最后一条AI消息添加时间戳
-      setMessages(prev => {
-        const updated = [...prev];
-        const lastMessage = updated[updated.length - 1];
-        if (lastMessage.sender === 'ai') {
-          lastMessage.timestamp = formatTime();
         }
-        return updated;
-      });
-      break;
-    }
-}
-
+        if (flag) {
+          // 在流式输出结束时，为最后一条AI消息添加时间戳
+          setMessages(prev => {
+            const updated = [...prev];
+            const lastMessage = updated[updated.length - 1];
+            if (lastMessage.sender === 'ai') {
+              lastMessage.timestamp = formatTime();
+            }
+            return updated;
+          });
+          break;
+        }
+      }
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
       setMessages([...newMessages, { 
