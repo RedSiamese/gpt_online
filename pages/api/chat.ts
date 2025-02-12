@@ -105,16 +105,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // 检测结束标记
       if (finishReason === "stop") {
         // 发送 OpenAI 官方约定的结束标记 [DONE]
-        res.write(`data: ${JSON.stringify({ content:finishReason })}\n\n`);
         break; // 主动跳出循环
       }
     }
-    res.write(`data: ${JSON.stringify({ content:"finished" })}\n\n`);
     res.end('data: [DONE]\n\n');
 
   } catch (error: unknown) {
     console.error('Error:', error);
-    
+    res.write(`data: ${JSON.stringify({ content:"error" })}\n\n`);
     if (error instanceof APIError) {
       res.status(error.status || 500).json({ 
         error: error.message || 'OpenAI API error occurred'
