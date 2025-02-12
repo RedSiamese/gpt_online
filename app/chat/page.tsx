@@ -113,10 +113,7 @@ const Chat = () => {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(5);
-            if (data === '[DONE]') {
-              flag = true;
-              break;
-            }
+            if (data === '[DONE]') { break; }
       
             try {
               const { content } = JSON.parse(data);
@@ -133,7 +130,7 @@ const Chat = () => {
             }
           }
         }
-        if (flag) {
+        if (done) {
           // 在流式输出结束时，为最后一条AI消息添加时间戳
           setMessages(prev => {
             const updated = [...prev];
