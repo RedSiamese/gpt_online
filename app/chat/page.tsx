@@ -99,12 +99,12 @@ const Chat = () => {
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
-
+      let end = false;
       if (!reader) throw new Error('No reader available');
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (end) break;
 
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');
@@ -112,7 +112,9 @@ const Chat = () => {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(5);
-            if (data === ' [DONE]') break;
+            if (data === ' [DONE]') {
+              end = true;
+            }
 
             try {
               const { content } = JSON.parse(data);
