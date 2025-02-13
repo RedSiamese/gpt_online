@@ -113,6 +113,7 @@ const Chat = () => {
           if (line.startsWith('data: ')) {
             const data = line.slice(5);
             if (data === ' [DONE]') {
+              console.log('data chunk:', data);
               end = true;
             }
 
