@@ -126,10 +126,9 @@ const Chat = () => {
             } catch (e) {
               console.error('Error parsing chunk:', e);
             }
-          }else {
-              console.log('Error line:', line);
-            }
-          }
+          } else {
+          console.log('Error line:', line);
+        }
         }
       }
 
