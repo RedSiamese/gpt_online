@@ -132,7 +132,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const content = chunk.choices[0]?.delta?.content || '';
       res.write(`data: ${JSON.stringify({ content })}\n\n`);
     }
-
+    res.write(`data: ${JSON.stringify({ content: "[done]" })}\n\n`);
     res.end('data: [DONE]\n\n');
 
   } catch (error: unknown) {
