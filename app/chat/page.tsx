@@ -103,7 +103,7 @@ const Chat = () => {
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) { console.log('end: done'); break; }
+        if (done) { break; }
 
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');
@@ -126,9 +126,7 @@ const Chat = () => {
             } catch (e) {
               console.error('Error parsing chunk:', e);
             }
-          } else {
-          console.log('Error line:', line);
-        }
+          }
         }
       }
 
